@@ -77,6 +77,12 @@ gltf.scene.traverse((child) => {
         child.material.needsUpdate = true
     }
 })
+// Oscilar hojas
+const leaves = scene.getObjectByName("leaves")
+if (leaves) {
+    leaves.rotation.y = Math.sin(clock.getElapsedTime()) * 0.05
+}
+
 //texture libro
 gltf.scene.traverse((child) => {
     if (child.isMesh && child.name === "Plane023_3") {
@@ -138,6 +144,8 @@ scene.add(legMiddleBack)
     (error) => {
         console.error('Error loading model:', error)
     }
+
+    
 )
 
 
@@ -224,9 +232,39 @@ const tick = () => {
 
 tick()
 
-const legBackLeft = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.15, 0.15, 0.8, 5),
-    sofaLegMaterial 
-)
-legBackLeft.position.set(-1.79, 0.15, 4.3) // ajusta según sofá
-scene.add(legBackLeft)
+// Ejemplo: detectar click en objeto
+const raycaster = new THREE.Raycaster()
+const mouse = new THREE.Vector2()
+
+// Estado y opciones
+const options = {
+    selectedColor: '#ff0000',
+    pickEnabled: false // 🔁 Esto es lo que marca si está activado
+}
+
+// GUI con color y toggle visible
+gui.addColor(options, 'selectedColor').name('🎨 Color seleccionado')
+gui.add(options, 'pickEnabled').name('🖱️ Modo selección')
+
+// Click handler con control del estado
+window.addEventListener('click', (event) => {
+    if (!options.pickEnabled) return // Solo si está activado
+
+    mouse.x = (event.clientX / sizes.width) * 2 - 1
+    mouse.y = -(event.clientY / sizes.height) * 2 + 1
+    raycaster.setFromCamera(mouse, camera)
+
+    const intersects = raycaster.intersectObjects(scene.children, true)
+    if (intersects.length > 0) {
+        const object = intersects[0].object
+        if (object.material && object.material.color) {
+            object.material.color.set(options.selectedColor)
+        }
+    }
+})
+
+
+// Controlar la intensidad de la luz
+const lightFolder = gui.addFolder('Luz')
+lightFolder.add(directionalLight, 'intensity').min(0).max(5).step(0.1)
+
