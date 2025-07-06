@@ -26,74 +26,120 @@ const gltfLoader = new GLTFLoader()
 
 let mixer = null
 
+//cargar texturas
+const textureLoader = new THREE.TextureLoader()
+const ballTexture = textureLoader.load('/textures/texture_futbol.jpg')
+const Box1Texture = textureLoader.load('/textures/texture_book_harry.jpg')
+
 gltfLoader.load(
-    '/models/semestral.glb', // <-- Make sure this path is correct
+    '/models/semestral.glb',
     (gltf) => {
         gltf.scene.scale.set(1, 1, 1)
-    
         scene.add(gltf.scene)
-    
+   //texture al balon
+   gltf.scene.traverse((child) => {
+    if (child.isMesh && child.name === "Solid001") {
+        child.material = new THREE.MeshStandardMaterial({
+            map: ballTexture,
+            roughness: 0.1,          // más brillante
+            metalness: 0.7,          // efecto metálico reflectante
+            emissive: new THREE.Color(0xffffff), // luz propia
+            emissiveIntensity: 0.5
+        })
+        child.material.needsUpdate = true
+        child.castShadow = true
+        child.receiveShadow = true
+    }
+})
+//texture a la pared
+gltf.scene.traverse((child) => {
+    if (child.isMesh && child.name === "Plane018") {
+        child.material.map = ballTexture
+        child.material.needsUpdate = true
+    }
+})
+//texture a la pared
+gltf.scene.traverse((child) => {
+    if (child.isMesh && child.name === "Plane018") {
+        child.material.map = ballTexture
+        child.material.needsUpdate = true
+    }
+})
+//texture libro
+
+gltf.scene.traverse((child) => {
+    if (child.isMesh && child.name === "Plane024_1") {
+        child.material = new THREE.MeshStandardMaterial({
+              color: 0xff69b4,         
+            roughness: 0.4,
+            metalness: 0.1
+        })
+        child.material.needsUpdate = true
+    }
+})
+//texture libro
+gltf.scene.traverse((child) => {
+    if (child.isMesh && child.name === "Plane023_3") {
+        child.material = new THREE.MeshStandardMaterial({
+              color: 0xff69b4,         
+            roughness: 0.4,
+            metalness: 0.1
+        })
+        child.material.needsUpdate = true
+    }
+})
+gltf.scene.traverse((child) => {
+    if (child.isMesh && child.name === "Plane023_1") {
+        child.material = new THREE.MeshStandardMaterial({
+              color: 0xff69b4,         
+            roughness: 0.4,
+            metalness: 0.1
+        })
+        child.material.needsUpdate = true
+    }
+})
+// patas del sofá
+let sofaLegMaterial = null
+
+gltf.scene.traverse((child) => {
+    if (child.isMesh && child.name === "Circle") {
+        sofaLegMaterial = child.material
+    }
+})
+
+// Crear pata izquierda trasera
+const legBackLeft = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.10, 0.10, 0.8, 5),
+    sofaLegMaterial
+)
+legBackLeft.position.set(-1.79, 0.15, 4.3)
+scene.add(legBackLeft)
+
+// Clonar a la derecha
+const legBackRight = legBackLeft.clone()
+legBackRight.position.set(3.2, 0.15, 4.3)
+scene.add(legBackRight)
+
+// Clonar a la derecha arriba
+const legMiddleBack = legBackLeft.clone()
+legMiddleBack.position.set(3.2, 0.15, 2.6)
+scene.add(legMiddleBack)
+
+       //animations book
+        if (gltf.animations && gltf.animations.length > 0) {
+            mixer = new THREE.AnimationMixer(gltf.scene)
+
+            gltf.animations.forEach((clip) => {
+                mixer.clipAction(clip).play()
+            })
+        }
     },
     undefined,
     (error) => {
         console.error('Error loading model:', error)
     }
 )
-// === ADD NEW OBJECTS ===
 
-// 1. Rug (a flat red circle)
-const rug = new THREE.Mesh(
-    new THREE.CircleGeometry(2.5, 32),
-    new THREE.MeshStandardMaterial({ color: '#808080', roughness: 1.5 })
-)
-rug.rotation.x = -Math.PI / 2
-rug.position.set(0, 0.01, 0) // Slightly above floor to avoid z-fighting
-scene.add(rug)
-
-
-// TV base
-const tv = new THREE.Mesh(
-    new THREE.BoxGeometry(3.2, 3.2, 0.05),
-    new THREE.MeshStandardMaterial({ color: '#000000' })
-)
-tv.position.set(0, 1.2, -1.49) // Adjust to your wall
-scene.add(tv)
-
-// TV screen (optional lighter frame or glow)
-const tvFrame = new THREE.Mesh(
-    new THREE.BoxGeometry(3, 3, 0.01),
-    new THREE.MeshStandardMaterial({ color: '#8B0000', emissive: '#111111' })
-)
-tvFrame.position.copy(tv.position)
-tvFrame.position.z -= 0.01
-scene.add(tvFrame)
-
-// === END OF NEW OBJECTS ===
-const bookBase = new THREE.Mesh(
-    new THREE.BoxGeometry(0.4, 0.02, 0.3),
-    new THREE.MeshStandardMaterial({ color: '#804000' }) // brown cover
-)
-bookBase.position.set(0.5, 0.02, -0.8)
-scene.add(bookBase)
-
-// Page (single animated mesh)
-const bookPage = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.38, 0.28),
-    new THREE.MeshStandardMaterial({ color: '#ffffff', side: THREE.DoubleSide })
-)
-bookPage.rotation.x = -Math.PI / 2
-bookPage.position.set(0.5, 0.03, -0.8)
-scene.add(bookPage)
-
-// Animation for the book page
-const bookPageAnimation = {
-    angle: 0,
-    update: function(delta) {
-        this.angle += delta * 0.5; // Adjust speed as needed
-        if (this.angle > Math.PI / 2) this.angle = 0; // Reset after a full flip
-        bookPage.rotation.y = this.angle; // Rotate around Y-axis
-    }
-};  
 
 /**
  * Lights
@@ -177,3 +223,10 @@ const tick = () => {
 }
 
 tick()
+
+const legBackLeft = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.15, 0.15, 0.8, 5),
+    sofaLegMaterial 
+)
+legBackLeft.position.set(-1.79, 0.15, 4.3) // ajusta según sofá
+scene.add(legBackLeft)
