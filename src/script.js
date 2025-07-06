@@ -3,33 +3,16 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-
-/**
- * Debug UI
- */
 const gui = new GUI()
-
-/**
- * Canvas
- */
 const canvas = document.querySelector('canvas.webgl')
-
-/**
- * Scene
- */
 const scene = new THREE.Scene()
-
-/**
- * Load Model (without Draco)
- */
 const gltfLoader = new GLTFLoader()
-
 let mixer = null
 
 //cargar texturas
 const textureLoader = new THREE.TextureLoader()
 const ballTexture = textureLoader.load('/textures/texture_futbol.jpg')
-const Box1Texture = textureLoader.load('/textures/texture_book_harry.jpg')
+// const Box1Texture = textureLoader.load('/textures/texture_book_harry.jpg')
 
 gltfLoader.load(
     '/models/semestral.glb',
@@ -232,23 +215,20 @@ const tick = () => {
 
 tick()
 
-// Ejemplo: detectar click en objeto
+// click en objeto
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 
-// Estado y opciones
 const options = {
     selectedColor: '#ff0000',
     pickEnabled: false // 🔁 Esto es lo que marca si está activado
 }
 
-// GUI con color y toggle visible
-gui.addColor(options, 'selectedColor').name('🎨 Color seleccionado')
+gui.addColor(options, 'selectedColor').name('Cambiar color al objeto')
 gui.add(options, 'pickEnabled').name('🖱️ Modo selección')
 
-// Click handler con control del estado
 window.addEventListener('click', (event) => {
-    if (!options.pickEnabled) return // Solo si está activado
+    if (!options.pickEnabled) return 
 
     mouse.x = (event.clientX / sizes.width) * 2 - 1
     mouse.y = -(event.clientY / sizes.height) * 2 + 1
@@ -262,7 +242,6 @@ window.addEventListener('click', (event) => {
         }
     }
 })
-
 
 // Controlar la intensidad de la luz
 const lightFolder = gui.addFolder('Luz')
