@@ -129,7 +129,8 @@ const waterMaterial = new THREE.MeshPhysicalMaterial({
   ior: 1.333,                 // Índice de refracción del agua
   transparent: true,
   opacity: 0.75,              // Ajusta según preferencia
-  reflectivity: 0.3           // Opcional: agrega reflejo
+  reflectivity: 0.3,
+   
 });
 
 const water = new THREE.Mesh(waterGeometry, waterMaterial);
