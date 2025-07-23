@@ -118,23 +118,23 @@ legMiddleBack.position.set(3.2, 0.15, 2.7)
 scene.add(legMiddleBack)
 
 
-const waterGeometry = new THREE.BoxGeometry(2, 0.9, 0.5); // ejemplo: ajusta a tu pecera
+const waterGeometry = new THREE.BoxGeometry(2, 1.2, 0.5); // ejemplo: ajusta a tu pecera
 
 const waterMaterial = new THREE.MeshPhysicalMaterial({
   color: 0x66ccff,            // Color azul claro
-  transmission: 1.0,         
-  thickness: 0.2,             // Grosor óptico para simulación volumétrica
+  transmission: 1.1,         
+  thickness: 0.1,             // Grosor óptico para simulación volumétrica
   roughness: 0.05,            // Suavidad de la superficie
   metalness: 0.0,
   ior: 1.333,                 // Índice de refracción del agua
   transparent: true,
-  opacity: 0.75,              // Ajusta según preferencia
-  reflectivity: 0.3,
+  opacity: 0.3,               // Más transparente (era 0.75, ahora 0.3)
+  reflectivity: 0.1,
    
 });
 
 const water = new THREE.Mesh(waterGeometry, waterMaterial);
-water.position.set(3.2, 0.7, -3.5); // Ajusta la posición según tu pecera
+water.position.set(3.25, 0.7, -3.5); // Ajusta la posición según tu pecera
 scene.add(water);
 
 
@@ -221,8 +221,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 /**
  * Animation Loop
- * - Siempre mantiene el render y las animaciones activas,
- *   independiente de la posición de la cámara.
  */
 const clock = new THREE.Clock()
 let previousTime = 0
