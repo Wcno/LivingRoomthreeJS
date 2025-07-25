@@ -28,9 +28,9 @@ gltfLoader.load(
                 child.material = new THREE.MeshStandardMaterial({
                     map: ballTexture,
                     roughness: 0.1,        
-                    metalness: 0.7,      
+                    metalness: 0.5,      
                     emissive: new THREE.Color(0xffffff), 
-                    emissiveIntensity: 0.5
+                    emissiveIntensity: 0.3
                 })
                 child.material.needsUpdate = true
                 child.castShadow = true
@@ -68,8 +68,6 @@ gltfLoader.load(
                 child.material.needsUpdate = true
             }
         })
-
-        // Configurar material del cubo (negro)
         gltf.scene.traverse((child) => {
             if (child.isMesh && child.name === "Cube001") {
                 child.material = new THREE.MeshStandardMaterial({
@@ -91,6 +89,9 @@ gltfLoader.load(
                 child.material.needsUpdate = true
             }
         })
+ 
+        
+
         // Crear patas adicionales para el sofá
         let sofaLegMaterial = null
 
@@ -135,7 +136,9 @@ gltfLoader.load(
         water.position.set(3.25, 0.7, -3.5)
         scene.add(water)
 
-        // Configurar animaciones del modelo (si existen)
+        
+
+        // Configurar animaciones del modelo 
         if (gltf.animations && gltf.animations.length > 0) {
             mixer = new THREE.AnimationMixer(gltf.scene)
             gltf.animations.forEach((clip) => {
@@ -148,7 +151,6 @@ gltfLoader.load(
         console.error('Error loading model:', error)
     }
 )
-
 
 // Configuración de iluminación
 const ambientLight = new THREE.AmbientLight(0xffffff, 2.4)
@@ -254,6 +256,26 @@ window.addEventListener('click', (event) => {
 })
 
 // Controles de iluminación en la GUI
-const lightFolder = gui.addFolder('Luz')
+const lightFolder = gui.addFolder('Luz Escena')
 lightFolder.add(directionalLight, 'intensity').min(0).max(5).step(0.1)
+
+const lightControls = {
+    apagarLuz: () => {
+        directionalLight.intensity = 0
+        ambientLight.intensity = 0
+    },
+    encenderLuz: () => {
+        directionalLight.intensity = 1.8
+        ambientLight.intensity = 2.4
+    }
+}
+
+lightFolder.add(lightControls, 'apagarLuz').name('🔴 Apagar luz')
+lightFolder.add(lightControls, 'encenderLuz').name('🟢 Encender luz')
+
+const tvLight = new THREE.RectAreaLight(0xffffff, 10, 2, 1.2)
+tvLight.position.set(2.7, 1.5, -3.8) // Ajusta según la posición del TV
+tvLight.rotation.y = Math.PI         
+scene.add(tvLight)
+
 
