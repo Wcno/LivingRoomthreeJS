@@ -122,10 +122,12 @@ gltfLoader.load(
         const waterGeometry = new THREE.BoxGeometry(2, 1.2, 0.5)
         const waterMaterial = new THREE.MeshPhysicalMaterial({
             color: 0x66ccff,
-            transmission: 1.1,
+            transmission: 1.0,
             thickness: 0.1,
+            depthWrite: false,
             roughness: 0.05,
             metalness: 0.0,
+            
             ior: 1.333,
             transparent: true,
             opacity: 0.3,
@@ -133,7 +135,9 @@ gltfLoader.load(
         })
 
         const water = new THREE.Mesh(waterGeometry, waterMaterial)
+        
         water.position.set(3.25, 0.7, -3.5)
+        water.renderOrder = 1; // Asegúrate de que los peces tengan renderOrder < 1
         scene.add(water)
 
         
